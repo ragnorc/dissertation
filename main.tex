@@ -1,0 +1,125 @@
+
+% to choose your degree
+% please un-comment just one of the following
+
+\documentclass[bsc,frontabs,twoside,singlespacing,parskip,deptreport]{infthesis}     % for BSc, BEng etc.
+% \documentclass[minf,frontabs,twoside,singlespacing,parskip,deptreport]{infthesis}  % for MInf
+
+\usepackage{bm}
+\usepackage[thinc]{esdiff}
+
+\begin{document}
+
+\title{A deep learning approach to drug action prediction}
+
+\author{Ragnor Comerford}
+
+% to choose your course
+% please un-comment just one of the following
+\course{Artificial Intelligence and Computer Science}
+%\course{Artificial Intelligence and Software Engineering}
+%\course{Artificial Intelligence and Mathematics}
+%\course{Artificial Intelligence and Psychology }   
+%\course{Artificial Intelligence with Psychology }   
+%\course{Linguistics and Artificial Intelligence}    
+%\course{Computer Science}
+%\course{Software Engineering}
+%\course{Computer Science and Electronics}    
+%\course{Electronics and Software Engineering}    
+%\course{Computer Science and Management Science}    
+%\course{Computer Science and Mathematics}
+%\course{Computer Science and Physics}  
+%\course{Computer Science and Statistics}    
+
+% to choose your report type
+% please un-comment just one of the following
+%\project{Undergraduate Dissertation} % CS&E, E&SE, AI&L
+%\project{Undergraduate Thesis} % AI%Psy
+\project{4th Year Project Report}
+
+\date{\today}
+
+\abstract{
+This is an example of {\tt infthesis} style.
+The file {\tt skeleton.tex} generates this document and can be 
+used to get a ``skeleton'' for your thesis.
+The abstract should summarise your report and fit in the space on the 
+first page.
+%
+You may, of course, use any other software to write your report,
+as long as you follow the same style. That means: producing a title
+page as given here, and including a table of contents and bibliography.
+}
+
+\maketitle
+
+\section*{Acknowledgements}
+I would like to express my sincere gratitude to my supervisor, Michael Herrmann, for his valuable guidance and insightful feedback. I would also like to thank my family and friends for their constant support and love
+throughout my academic years.
+
+\tableofcontents
+
+%\pagenumbering{arabic}
+
+
+\chapter{Introduction}
+
+\section{Motivation}
+\section{Objectives}
+\section{Contributions}
+\begin{itemize}
+\item Literature review on existing approaches to drug action prediction 
+\item Exploratory data analysis using PCA
+\item Design and implementation of neural networks for mechanism of action prediction
+\item Design and Implementation of a variational autoencoder for feature extraction
+
+\end{itemize}
+
+
+
+\chapter{Background}
+
+Gene expression forms a fundamental part of the central dogma of microbiology \cite{crick_protein_1958} and refers to the process by which the genetic information stored in the DNA is used in the synthesis of a gene product such as RNA or protein. 
+\section{MoA}
+The Mechanism of Action (MoA) of a compound refers to the set of target and effector proteins that are associated with a certain biological activity in a specific cellular context. Its correct identification for novel compounds represents a major challenge in drug development as as most candidate compounds fail in the pharmacological pipeline due to toxicity associated with off-target affects and lack of efficacy\cite{wehling_assessing_2009}.
+\section{Neural networks and deep learning}
+Deep learning can generally be described as a class of machine learning algorithms that uses artificial neural networks (ANNs) with multiple layers between the input and output layers for learning data representations. ANNs are loosely inspired by the biological neural networks where inter-connected neurons transmit signals to each other.
+The universal approximation theorem represents an important discovery in the theory of deep learning. It states that, for any continuous function \(f\) on a compact space \(K\), there exists a single-layer feedforward neural network which uniformly approximates \(f\) within an arbitrary error \(\epsilon>0\) on \(K\).
+\subsection{Feedforward neural network}
+A feedforward neural network consists of an input layer and output layer that passes information in a forward fashion through a series of latent layers with the ultimate goal of approximating a function with a composition of intermediate computations. More formally, a feedfoward neural network, also called multilayer perceptron, approximates some function \(f'\) by learning the values of parameters \(\boldsymbol{\theta}\) such that \(f(\boldsymbol{x} ; \boldsymbol{\theta}) \approx f'\).
+Each layer \(\bm{h^{(l)}}\)  in the feedforward neural network consists of a linear combination of the previous layer \(\bm{h^{(l-1)}}\), followed by a non-linear transformation \(g^{(l)}\) such that \[\bm{h^{(l)}} = g^{(l)}(W^{(l)}\bm{h^{(l-1)}} + \bm{b^{(l)})},\]
+where \(W^{(l)}\) represents the weight matrix and \(\bf{b^{(l)}}\) the bias allowing a shift in the activation. The logistic sigmoid is a very commonly used activation function: \[g^{(l)}(a) = \sigma(a) = \frac{1}{1+e^{-a}}\]
+Other functions include the Rectified Linear Unit (ReLu), \(g^{(l)}(a)= \max(0, a)\), the hyperbolic tangent, \(g^{(l)}(a)={\frac {e^{a}-e^{-a}}{e^{a}+e^{-a}}}\), or the radial basis function, \(g^{(l)}(a)=\varphi (\left\|a -c \right\|)\).
+\subsection{Training}
+For a given dataset \(X\), the training procedure of a feedforward neural network parameterized by \(\theta\) consists of defining a differentiable loss function \(E(X,\theta)\), computing its gradient with respect to the weights and biases of the network \(\diffp{E(X,\theta)}{\theta}\) and a final optimization procedure to perform learning using the gradient.
+The gradient of the loss function is usually computed using backward propagation of the error (backpropagation) which follows from the repeated use of the chain rule and product rule in differential calculus.  
+
+ADAM and SGD
+
+\subsection{Regularization}
+
+\subsection{Variational Autoencoder}
+
+\section{PCA}
+\section{Bayesian Optimization}
+
+\section{Related Work}
+The rise of drug discovery deep learning
+\chapter{Methodology: Initial Experiments and baselines}
+\section{Exploratory Data Analysis}
+PCA
+\section{Preprocessing}
+\section{Problem definition}
+
+cross entropy
+mutation
+\chapter{Results and Discussion}
+\chapter{Conclusions}
+\chapter{Future Work}
+
+% use the following and \cite{} as above if you use BibTeX
+% otherwise generate bibtem entries
+\bibliographystyle{plain}
+\bibliography{references.bib}
+
+\end{document}
