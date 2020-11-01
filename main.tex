@@ -65,12 +65,13 @@ throughout my academic years.
 \chapter{Introduction}
 
 \section{Motivation}
-\section{Objectives}
 \section{Contributions}
+\section{Outline of the report}
 \begin{itemize}
 \item Literature review on existing approaches to drug action prediction 
-\item Exploratory data analysis using PCA
+\item Exploratory data analysis and PCA
 \item Design and implementation of neural networks for mechanism of action prediction
+\item Implementation of Bayesian Optimization
 \item Design and Implementation of a variational autoencoder for feature extraction
 
 \end{itemize}
@@ -78,15 +79,16 @@ throughout my academic years.
 
 
 \chapter{Background}
-
-Gene expression forms a fundamental part of the central dogma of microbiology \cite{crick_protein_1958} and refers to the process by which the genetic information stored in the DNA is used in the synthesis of a gene product such as RNA or protein. 
-\section{MoA}
-The Mechanism of Action (MoA) of a compound refers to the set of target and effector proteins that are associated with a certain biological activity in a specific cellular context. Its correct identification for novel compounds represents a major challenge in drug development as as most candidate compounds fail in the pharmacological pipeline due to toxicity associated with off-target affects and lack of efficacy\cite{wehling_assessing_2009}.
-\section{Neural networks and deep learning}
-Deep learning can generally be described as a class of machine learning algorithms that uses artificial neural networks (ANNs) with multiple layers between the input and output layers for learning data representations. ANNs are loosely inspired by the biological neural networks where inter-connected neurons transmit signals to each other.
+\section{Molecular biology}
+\subsection{Gene expression}
+\textit{Gene expression} forms a fundamental part of the central dogma of microbiology \cite{crick_protein_1958} and refers to the process by which the genetic information stored in the DNA is used in the synthesis of a gene product such as RNA or protein. Gene expression can be regulated by a wide range of biological mechanisms in the cell. Activation or inactivation of signaling pathways in regular physiological processes or in response to stimuli affects gene expressions via downstream transcription factors and their regulatory genes, hereby generating characteristic patterns of gene expression, commonly referred to as \textit{gene expression signatures}.
+\subsection{MoA}
+The \textit{mechanism of action} (MoA) of a compound refers to the set of target and effector proteins that are associated with a certain biological activity in a specific cellular context. Its correct identification for novel compounds represents a major challenge in drug development as as most candidate compounds fail in the pharmacological pipeline due to toxicity associated with off-target affects and lack of efficacy\cite{wehling_assessing_2009}.
+\section{Deep learning}
+Deep learning can generally be described as a class of machine learning algorithms that uses artificial neural networks (ANNs) with multiple layers between the input and output layers for learning data representations. ANNs are loosely inspired by the biological brain where inter-connected neurons transmit signals to each other.
 The universal approximation theorem represents an important discovery in the theory of deep learning. It states that, for any continuous function \(f\) on a compact space \(K\), there exists a single-layer feedforward neural network which uniformly approximates \(f\) within an arbitrary error \(\epsilon>0\) on \(K\).
 \subsection{Feedforward neural network}
-A feedforward neural network consists of an input layer and output layer that passes information in a forward fashion through a series of latent layers with the ultimate goal of approximating a function with a composition of intermediate computations. More formally, a feedfoward neural network, also called multilayer perceptron, approximates some function \(f'\) by learning the values of parameters \(\boldsymbol{\theta}\) such that \(f(\boldsymbol{x} ; \boldsymbol{\theta}) \approx f'\).
+A \textit{feedforward neural network} consists of an input layer and output layer that passes information in a forward fashion through a series of latent layers with the ultimate goal of approximating a function with a composition of intermediate computations. More formally, a feedfoward neural network, also called \textit{multilayer perceptron}, approximates some function \(f'\) by learning the values of parameters \(\boldsymbol{\theta}\) such that \(f(\boldsymbol{x} ; \boldsymbol{\theta}) \approx f'\).
 Each layer \(\bm{h^{(l)}}\)  in the feedforward neural network consists of a linear combination of the previous layer \(\bm{h^{(l-1)}}\), followed by a non-linear transformation \(g^{(l)}\) such that \[\bm{h^{(l)}} = g^{(l)}(W^{(l)}\bm{h^{(l-1)}} + \bm{b^{(l)})},\]
 where \(W^{(l)}\) represents the weight matrix and \(\bf{b^{(l)}}\) the bias allowing a shift in the activation. The logistic sigmoid is a very commonly used activation function: \[g^{(l)}(a) = \sigma(a) = \frac{1}{1+e^{-a}}\]
 Other functions include the Rectified Linear Unit (ReLu), \(g^{(l)}(a)= \max(0, a)\), the hyperbolic tangent, \(g^{(l)}(a)={\frac {e^{a}-e^{-a}}{e^{a}+e^{-a}}}\), or the radial basis function, \(g^{(l)}(a)=\varphi (\left\|a -c \right\|)\).
@@ -107,6 +109,7 @@ ADAM and SGD
 The rise of drug discovery deep learning
 \chapter{Methodology: Initial Experiments and baselines}
 \section{Exploratory Data Analysis}
+The dataset contains 789 gene expression and cell viability features ...
 PCA
 \section{Preprocessing}
 \section{Problem definition}
@@ -115,6 +118,7 @@ cross entropy
 mutation
 \chapter{Results and Discussion}
 \chapter{Conclusions}
+CMap comes with some limitations, such as limited drug perturbation data, a limited drug coverage, dosage-dependent conditions and the uncertainty of applying cell lines or animal model expression patterns to human systems. Also, the methodology can be expensive and time-consuming before it can generate a significant portion of all safe dosage conditions for a limited number of cell lines for CMap
 \chapter{Future Work}
 
 % use the following and \cite{} as above if you use BibTeX
