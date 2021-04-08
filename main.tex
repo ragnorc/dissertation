@@ -27,7 +27,7 @@
 %\reversemarginpar
 \begin{document}
 
-\title{An Interpretable Deep Learning Approach to Pharmacodynamic Mechanism of Action Prediction}
+\title{An Interpretable Deep Learning Approach to Pharmacodynamic Mechanism of Action Prediction using Transcriptomic Data}
 
 \author{Ragnor Comerford}
 
@@ -57,15 +57,9 @@
 \date{\today}
 
 \abstract{
-This is an example of {\tt infthesis} style.
-The file {\tt skeleton.tex} generates this document and can be 
-used to get a ``skeleton'' for your thesis.
-The abstract should summarise your report and fit in the space on the 
-first page.
-%
-You may, of course, use any other software to write your report,
-as long as you follow the same style. That means: producing a title
-page as given here, and including a table of contents and bibliography.
+Mechanism of action prediction is the task of inferring the biological activity of compounds in drug discovery.\\
+This works explores the applicability of deep neural networks for this inference task. Existing approaches applying deep learning to drug discovery tasks are reviewed and discussed. A system for optimizing the neural networks using Bayesian Optimization is designed and evaluated with promising results.
+Lastly, a method is proposed that employs integrated gradient allowing for biological interpretations of the model predictions.
 }
 
 \maketitle
@@ -88,23 +82,22 @@ The astronomical costs of drug development are reflected in the inequality of ac
 However, recent advances in machine learning (ML) coupled with a significant increase in computing power and data are inducing a renaissance in drug development.
 Deep learning (DL) \cite{lecun_deep_2015} with its ability to model complex non-linear relationships has successfully taken advantage of the exponential growth in the availability of data and computer hardware. The algorithmic optimization of DL algorithms for graphical processing units (GPUs) has significantly reduced the time to train DL models by leveraging the power of GPUs to significantly speed up parallel processing and matrix operations.
 The explosive growth of available biomedical and compound activity databases \cite{papadatos_activity_2015}\cite{kim_pubchem_2016}\cite{gaulton_chembl_2012}, partly owed to the emergence of new experimental techniques such as HTS or parallel synthesis \cite{grada_next-generation_2013}, allows DL to perform automatic feature detection and complex representation learning from massive amounts of unlabelled or labelled biomedical data.\\
-One such instance of large-scale biomedical data collection enabled by new experimental techniques is the \textit{Connectivity Map} (CMap) \cite{lamb_connectivity_2006} which plays a central role in our work. The CMap is a project within the Broad Institute of MIT and Harvard, the Laboratory for Innovation Science at Harvard (LISH), and the  NIH  Common  Funds  Library  of  Integrated  Network-Based  Cellular  Signatures(LINCS) that uses gene expression signatures to discover functional connections among diseases, genetic perturbation, and drug action \cite{musa_review_2017}. They developed the L1000 assay to facilitate rapid, flexible and high-throughput gene expression profiling at lower costs \cite{subramanian_next_2017} and built a comprehensive, large-scale drug perturbation database containing gene expression signatures of a wide range of cultivated cell lines treated with thousands of chemical compounds. In this work, we leverage the recent availability of such data as well as deep learning techniques to understand the relationship between drugs, genes and pathways and build an accurate model predicting the function of unknown compounds.
+One such instance of large-scale biomedical data collection enabled by new experimental techniques is the \textit{Connectivity Map} (CMap) \cite{lamb_connectivity_2006} which plays a central role in our work. The CMap is a project within the Broad Institute of MIT and Harvard, the Laboratory for Innovation Science at Harvard (LISH), and the  NIH  Common  Funds  Library  of  Integrated  Network-Based  Cellular  Signatures (LINCS) that uses gene expression signatures to discover functional connections among diseases, genetic perturbation, and drug action \cite{musa_review_2017}. They developed the L1000 assay to facilitate rapid, flexible and high-throughput gene expression profiling at lower costs \cite{subramanian_next_2017} and built a comprehensive, large-scale drug perturbation database containing gene expression signatures of a wide range of cultivated cell lines treated with thousands of chemical compounds. In this work, we leverage the recent availability of such data as well as deep learning techniques to understand the relationship between drugs, genes and pathways and build an accurate model predicting the function of unknown compounds.
 
 
 \section{Contributions}
 \begin{itemize}
 \item Literature review on existing approaches to drug action prediction 
-\item Exploratory data analysis and PCA
+\item Correlation and Principal Component Analysis
 \item Design and implementation of neural networks for mechanism of action prediction
 \item Implementation of Bayesian Optimization
-\item Implementation of integrated gradients method and biological enrichment for model interpretation.
-\item Interpretation of model outputs in the biological and pharmacological context.
+\item Biological interpretation of the learned model using the feature attribution method \textit{Integrated Gradients}
+
 \end{itemize}
-\section{Outline of the report}
 
 \chapter{Background}
 In this chapter, we introduce the reader to the biological concepts and mechanisms that are relevant to the understanding of deep learning applications to drug discovery. This is followed by a brief introduction to deep learning algorithms. \\
-We assume that the reader is familiar with the basic concepts of biology and the fundamentals of linear algebra, probability, and calculus. We refer the interested reader to Goodfellow \textit{et al.} (2016) \cite{goodfellow_deep_2016} and Alberts \textit{et al.} (2013) \cite{alberts_essential_2013} for comprehensive introductions.
+For more comprehensive introductions, we refer the interested reader to Goodfellow \textit{et al.} (2016) \cite{goodfellow_deep_2016} and Alberts \textit{et al.} (2013) \cite{alberts_essential_2013}/
 \section{Molecular biology}
 \subsection{Gene expression}
 \textit{Gene expression} forms the fundamental part of the central dogma of microbiology \cite{crick_protein_1958} and refers to the process by which the genetic information stored in the DNA is used in the synthesis of a gene product such as RNA or protein. Gene expression can be regulated by a wide range of biological mechanisms in the cell. Activation or inactivation of signaling pathways in regular physiological processes or in response to stimuli affects gene expression via transcription factors and their regulatory genes \cite{itadani_can_2008}. This cascade of signal transduction generates characteristic patterns of gene expression, commonly referred to as \textit{gene expression signatures}.
@@ -117,7 +110,7 @@ The \textit{mechanism of action} (MoA) of a compound refers to the set of target
 
 \section{Deep learning}
 \textit{Deep learning} can generally be described as a class of machine learning algorithms that uses \textit{artificial neural networks} (ANNs) with multiple layers between the input and output layers for learning data representations. ANNs are loosely inspired by the biological brain where inter-connected neurons transmit signals to each other.
-The universal approximation theorem represents an important discovery in the theory of deep learning. It states that, for any continuous function \(f\) on a compact space \(K\), there exists a single-hidden-layer feedforward neural network which uniformly approximates \(f\) within an arbitrary error \(\epsilon>0\) on \(K\) \cite{hornik_multilayer_1989}.
+The universal approximation theorem represents an important discovery in the theory of deep learning. It states that, for any continuous function \(f\) on a compact space \(K\), there exists a single-hidden-layer feedforward neural network which uniformly approximates \(f\) within an arbitrary error \(\epsilon>0\) on \(K\) \cite{hornik_multilayer_1989}. However, in practice, it is often favourable to use multiple hidden layers as it greatly reduces the size of the network and the need for data to learn representations that generalise well.
 
 \subsection{Feedforward neural network}
 A \textit{feedforward neural network} consists of an input layer and output layer that passes information in a forward fashion through a series of latent layers with the ultimate goal of approximating a function with a composition of intermediate computations. More formally, a feedfoward neural network, also called \textit{multilayer perceptron}, approximates some function \(f'\) by learning the values of parameters \(\mathbf{\theta}\) such that \(f(\mathbf{x} ; \mathbf{\theta}) \approx f'\).
@@ -129,7 +122,7 @@ Each layer \(l\) in the feedforward neural network consists of a linear combinat
 \[z_{j}^{(l)}=g^{(l)}\left(a_{j}^{(l)}\right)\]
 
 where \(w\) represents the weights and \(b^{(l)}\) the bias allowing a shift in the activation. The logistic sigmoid is a very commonly used activation function: \[g^{(l)}(a) = \sigma(a) = \frac{1}{1+e^{-a}}\]
-Other common functions include the Rectified Linear Unit (ReLu), \(g^{(l)}(a)= \max(0, a)\), the hyperbolic tangent, \(g^{(l)}(a)={\frac {e^{a}-e^{-a}}{e^{a}+e^{-a}}}\), or the radial basis function, \(g^{(l)}(a)=\varphi (\left\|a -c \right\|)\).
+Other common functions include the Rectified Linear Unit (ReLu), \(g^{(l)}(a)= \max(0, a)\), the hyperbolic tangent, \(g^{(l)}(a)={\frac {e^{a}-e^{-a}}{e^{a}+e^{-a}}}\), or the radial basis function, \(g^{(l)}(a)=\varphi (\left\|a -c \right\|)\), where \(\varphi\) is a positive definite function with shape parameter \(\varepsilon\) such as the Gaussian \(\varphi(r)=e^{-(\varepsilon r)^{2}}\).
 \subsection{Training}
 For a given dataset \(X\), the typical training procedure of a feedforward neural network parameterized by \(\theta\) is gradient-based and consists of a series of steps: \\
 \begin{enumerate}
@@ -151,7 +144,7 @@ For mathematical convenience, we take the logarithm of the expression and obtain
 CE = -\sum_{i=1}^{N} y_{i} \log \left(f_{\theta}\left(\mathbf{x}_{i}\right)\right)+\left(1-y_{i}\right) \log \left(1-f_{\theta}\left(\mathbf{x}_{i}\right)\right)
 \end{equation}
 
-We can generalise to multi-class classification, which we are using in section \ref{methodology}, by one-hot encoding our labels \(\mathbf{y}_{i}\) for \(K\) classes:
+We can generalise to multi-class classification, which we are using in chapter 5, by one-hot encoding our labels \(\mathbf{y}_{i}\) for \(K\) classes:
 
 \begin{equation}
    CE = -\sum_{i=1}^{N} \sum_{j=1}^{K} y_{i j} \log \left(f_{\theta}\left(x_{i}\right)_{j}\right)+\left(1-y_{i j}\right) \log \left(1-f_{\theta}\left(x_{i}\right)_{j}\right)
@@ -161,13 +154,22 @@ We can generalise to multi-class classification, which we are using in section \
     \item{ \bf{Computing the loss gradients} } \\
     \textit{Backpropagation} (also known as \textit{back-propagation of error}, or \textit{back-prop}) \cite{rumelhart_learning_1986} is by far the most popular and widely used algorithm for computing the gradients of the loss function of neural networks. Backpropagation is an instance of automatic reverse-mode differentiation and gained its popularity from the fact that it can accumulate all of the partial derivatives of any function with respect to all of its input in a very efficient manner. 
 
-By repeated use of the chain rule, we can compute for squared error the error signals \(\delta\) starting from the output units.
-\[\delta_{k}^{(L)}=2\left(z_{k}^{(L)}-y_{k}\right) \cdot g^{(L)\prime}\left(a_{k}^{(L)}\right)\]
+By repeated use of the chain rule, we can, for the squared error, compute the error signals \(\delta\) starting from the output units.
+\begin{equation}
+    \delta_{k}^{(L)}=2\left(z_{k}^{(L)}-y_{k}\right) \cdot g^{(L)\prime}\left(a_{k}^{(L)}\right)
+\end{equation}
+
 The hidden unit error signals are then given by
-\[\delta_{j}^{(l)}=g^{(l)\prime}\left(a_{j}^{(l)}\right) \sum_{k} w_{k j}^{(l+1)} \delta_{k}^{(l+1)}.\]
+\begin{equation}
+    \delta_{j}^{(l)}=g^{(l)\prime}\left(a_{j}^{(l)}\right) \sum_{k} w_{k j}^{(l+1)} \delta_{k}^{(l+1)}.
+\end{equation}
+
 
 Finally, the derivatives with respect to the model parameters are given by
-\[\frac{\partial E}{\partial w_{k j}^{(l)}}=\delta_{k}^{(l)} z_{j}^{l-1} \quad\quad \frac{\partial E}{\partial b_{k}^{(l)}}=\delta_{k}^{(l)}\]
+\begin{equation}
+    \frac{\partial E}{\partial w_{k j}^{(l)}}=\delta_{k}^{(l)} z_{j}^{l-1} \quad\quad \frac{\partial E}{\partial b_{k}^{(l)}}=\delta_{k}^{(l)}
+\end{equation}
+
     
     
     
@@ -189,8 +191,9 @@ Finally, the derivatives with respect to the model parameters are given by
      
      
     \item{ \bf{Optimization} } \\ 
-    The final traning step consists of an optimization procedure to perform learning using the gradient, i.e minimize the error function. The most popular optimization algorithm used is \textit{Stochastic Gradient Descent} (SGD). It performs an update of parameter \(\theta\) for each training pair \((\mathbf{x}_i,\mathbf{y}_i)\)
-    \[\theta=\theta-\eta \cdot \nabla_{\theta} E\left(\theta ; \mathbf{x}_i ; \mathbf{y}_i\right),\]
+    The final traning step consists of an optimization procedure to perform learning using the gradient, i.e., minimize the error function. The most popular optimization algorithm used is \textit{Stochastic Gradient Descent} (SGD). It performs the following update of parameter \(\theta\) for each training pair \((\mathbf{x}_i,\mathbf{y}_i)\):
+    \begin{equation}
+   \theta=\theta-\eta \cdot \nabla_{\theta} E\left(\theta ; \mathbf{x}_i ; \mathbf{y}_i\right),\end{equation}
     where \(\eta\) denotes the learning rate that determines the size of the steps we take to reach a (local) minimum \cite{ruder_overview_2017}. In neural networks, the parameters to be updated are the weights and biases.\\ There exists a wide range of other algorithms that try to improve the speed of convergence, the vulnerability to local optima and other properties of the learning procedure. One such popular algorithm is the adaptive learning rate method \textit{Adam} \cite{ruder_overview_2017}. It uses estimations of first and second moments of the gradient to adapt the learning rate for each parameter \cite{ruder_overview_2017}.
     
 \end{enumerate}
@@ -199,8 +202,8 @@ Finally, the derivatives with respect to the model parameters are given by
 
 
 
-\subsection{Regularization}
-\todo[inline]{Dropout etc ...}
+\subsection{Regularization by Dropout}
+Deep neural networks can have a very large number of parameters and are hereby vulnerable to overfitting. Neural units commonly suffer from co-adaptation as they influence each other through the backpropagated derivative that is used to optimize the network \cite{srivastava_dropout_2014}. The co-adaptations do not generalise well to unseen data, causing the network to overfit. A useful technique for addressing this issue is dropout which randomly drops units and their connections during training \cite{srivastava_dropout_2014}. This makes the presence of other hidden units unreliable and  leads to sparse representations in the network \cite{srivastava_dropout_2014}. The appropriate probability of dropout depends on the task and is commonly optimized in hyperparamereter tuning.
 
 
 
@@ -211,40 +214,42 @@ The three most prevalent applications of deep learning to drug discovery are \te
 encode and decode directly to and from parse trees from a \textit{context-free grammar} (CFG). Jaques \textit{et al.} built on the success of recurrent neural networks (RNNs) in the field of natural language processing and \textit{Reinforcement Learning} (RL). They generated SMILES strings using RNNs and applied the RL method \textit{Deep Q-Learning} to incite desired, domain-specific properties \cite{jaques_sequence_2017}. \\
 Drug-target interaction prediction (DTI) is another prominent approach in drug discovery and is concerned with the recognition of interactions between chemical compounds and the protein targets in the human body. Modulation of protein structure and function induced by interactions with compounds can have dramatic effects on the body as proteins are involved in a plethora of biological processes and pathways. Therefore, accurate interaction predictions can yield important discoveries on suitable drug candidates.
 Feng \textit{et al.} employed deep learning methods to predict DTI. They combined Molecular Graph Convolution (MGC) for compound featurization with protein descriptors to predict real-valued interaction strength between compounds and proteins \cite{feng_padme_2019}.
-Ragoza \textit{et al.}  proposed a method for protein-ligand scoring that applies a \textit{Convolutional Neural Network} (CNN) to three-dimensional (3D) representations of protein-ligand interactions as input. The scoring function automatically learns the key features of the protein-ligand interactions that correlate with binding \cite{ragoza_proteinligand_2017}.
-
- \todo[inline]{Add third application: Actitvity and Property prediction and related to my work}
-  \todo[inline]{Related Work on Explainability}
-
+Ragoza \textit{et al.}  proposed a method for protein-ligand scoring that applies a \textit{Convolutional Neural Network} (CNN) to three-dimensional (3D) representations of protein-ligand interactions as input. The scoring function automatically learns the key features of the protein-ligand interactions that correlate with binding \cite{ragoza_proteinligand_2017}. \\
+The third approach, which we are primarily concerned with in this work, is the prediction of compound activities and properties. ANNs have shown significant success in recent work: Inter alia, Dahl \textit{et al.} show that deep neural networks (DNN) outperformed standard Random Forests (RF) in predicting the biological activity of compounds from numerical chemical descriptors on the Merck Kaggle challenge data set \cite{ma_deep_2015}. In particular, they established that
+\begin{itemize}
+    \item DNNs can learn from a large number of descriptors without feature selection,
+    \item the overfitting problem can be mitigated by dropout,
+    \item the optimization of hyperparameters controlling the learning procedure and neural architecture can maximise the performance of DNNs\cite{chen_rise_2018}.
+\end{itemize}
+However, current approaches are not sufficient to establish the causality of drug-activity pairs. Truly understanding cellular function and pathways requires perturbating biological systems and monitoring the downstream consequences. Furthermore, most work lack the interpretability of the developed models required for medical decision making. In this work, we aim to address these challenges by performing interpretable deep learning on drug perturbational data provided by the Connectivity Map.
 
 \chapter{Experimental Setup}\label{methodology}
 
 \section{Data}
 Our data is provided by the \textit{Connectivity Map}, a project within the Broad Institute of MIT and Harvard, the Laboratory for Innovation Science at Harvard (LISH), and the NIH Common Funds Library of Integrated Network-Based Cellular Signatures (LINCS) and was generated by treating a sample of human cells with different drugs and then analyzing the cellular responses. \\ Cellular responses were measured in terms of expression levels of 772 landmark genes using the high-throughput gene expression assay L10000 and the viability values of 100 individual cell lines using the PRISM assay.\\
-Formally, the data can be denoted as \(\mathscr{D}=\{\mathbf{x}^{(i)},\mathbf{y}^{(i)}\}_{i=1}^{27796}\) where each tuple represents a drug perturbation, i.e a single treatment of a sample of cells by a specific drug.
-\\ Each feature vector \(\mathbf{x}^{(i)}=[\mathbf{e}^{(i)},\mathbf{v}^{(i)}, c^{(i)},d^{(i)},t^{(i)}]^{T}\) consists of 
+Formally, the data can be denoted as \(\mathscr{D}=\{\mathbf{x}^{(i)},\mathbf{y}^{(i)}\}_{i=1}^{N}\) where each tuple represents a drug perturbation, i.e., a single treatment of a sample of cells by a specific drug.
+\\ Each feature vector \(\mathbf{x}^{(i)}=[\mathbf{e}^{(i)},\mathbf{v}^{(i)}, c^{(i)},d^{(i)},t^{(i)}]^{L}\) consists of 
 \begin{itemize}
-    \item the expression levels \(\bf{e} \in \mathbb{R}^{772}\) of the 772 landmark genes
-    \item the cell viability values \(\bf{v} \in \mathbb{R}^{100}\) of the 100 different cell lineages
+    \item the expression levels \(\bf{e} \in \mathbb{R}^\mathnormal{E}\) of the \(E=772\) landmark genes
+    \item the cell viability values \(\bf{v} \in \mathbb{R}^\mathnormal{V}\) of the \(V=100\) different cell lineages
     \item the variable \(c \in \{0,1\}\) indicating control perturbations (\(c=1\)) or drug treatments (\(c=0\))
     \item the dose \(d \in \{0,1,2\}\)
     \item the time (in hours) \(t \in \{24,48,72\}\) of measurement after adding the compound
     
 \end{itemize}
 
-\(\mathbf{y}^{(i)}=[y_{1}^{(i)},y_{2}^{(i)},\ldots, y_{k}^{(i)}]^{T}\) denotes a one-hot encoded vector of the mechanisms of action \(y_{i}\) associated with the drug. A single perturbation can have multiple mechanisms of actions assigned
+\(\mathbf{y}^{(i)}=[y_{1}^{(i)},y_{2}^{(i)},\ldots, y_{k}^{(i)}]^{K}\) denotes a one-hot encoded vector of the mechanisms of action \(y_{i}\) associated with the drug. A single perturbation can have multiple mechanisms of actions assigned
 
 
-The gene expression and cell viability data was first pre-processed using quantile normalization in order to standardize the feature values across plates. Then, a robust z-score was computed for each gene based on control perturbation (drugs without any mechanism of action) values, i.e. normalized for difference from the controls (\textit{differential expression}).
-
-
-\section{Software}
+The gene expression and cell viability data was first pre-processed using quantile normalization in order to standardize the feature values across plates. Then, a robust \(z\)-score was computed for each gene based on control perturbation (drugs without any mechanism of action) values, i.e., normalized for difference from the controls (\textit{differential expression}).
 
 \section{Problem and Task Definitions}
 \begin{enumerate}
-    \item Find patterns in data of Exploratory Data Analysis
-    \item Train and optimize a model to infer mechanism of action from peturbational data. More formally, we want to learn a functional mapping \[f: \mathbb{R}^{L} \rightarrow \mathbb{R}^{K} \text { that fits }\left\{\mathbf{x}_{i}, \mathbf{y}_{i}\right\}_{i=1}^{N}\].
-    \item Analyse and interpret the model as well as the predictions in the biological domain 
+    \item Perform correlation analysis and dimensionality reduction on the feature space in order to guide our further work.
+    \item Train and optimize a model to infer mechanism of action from perturbational data. More formally, we want to learn a functional mapping 
+    \begin{equation} \label{funcmap}
+    f: \mathbb{R}^{L} \rightarrow \mathbb{R}^{K} \text { that fits }\left\{\mathbf{x}_{i}, \mathbf{y}_{i}\right\}_{i=1}^{N}\end{equation}
+    \item Interpret the model predictions with respect to the biological domain.
 \end{enumerate}
 
 
@@ -261,7 +266,7 @@ The gene expression and cell viability data was first pre-processed using quanti
 % \end{figure}
 
 \section{Correlation Analysis}
-We computed the intraclass Pearson correlation for all cell features \(\mathbf{v}\) and gene features \(\mathbf{e}\) respectively, and extracted the 35 features with highest correlation to perform agglomerative clustering with euclidean distance. Figure \ref{corr_maps} shows heatmaps of the correlation matrices with the respective clusters.  \\
+We computed the intraclass Pearson correlation for all cell features \(\mathbf{v}\) and gene features \(\mathbf{e}\) respectively, and extracted the 35 features with highest correlation to perform agglomerative clustering with Euclidean distance. Figure \ref{corr_maps} shows heatmaps of the correlation matrices with the respective clusters.  \\
 It can be clearly seen that the cell features (Figure \ref{cell_map}) do not exhibit clear clusters whereas the gene features (Figure \ref{corr_map}) contain two distinct clusters. 
 \begin{figure}[h!]
 \centering
@@ -281,7 +286,7 @@ It can be clearly seen that the cell features (Figure \ref{cell_map}) do not exh
 \label{corr_maps}
 \end{figure}
 In order two obtain a biological interpretation of the clusters, we performed \textit{Reactome} pathway enrichment analysis on the two cluster separately. \cite{fabregat_reactome_2017}. Reactome is a peer-reviewed pathway database and the enrichment provides us with the statistically over-represented pathways in which the genes in the respective clusters are involved, hereby enabling a biological interpretation of the clusters.\\
-Table \ref{c1_enrichment} and \ref{c2_enrichment} show the pathways with their associated p-values of the statistical over-representation test and clearly indicates that the clusters represent clear and distinct biological functions. The first cluster revolves around the transcription and expression of genes whereas the second cluster revolves around the cell cycle.\\
+Table \ref{c1_enrichment} and \ref{c2_enrichment} show the pathways with their associated p-values of the statistical over-representation test and clearly indicate that the clusters represent clear and distinct biological functions. The first cluster revolves around the transcription and expression of genes whereas the second cluster revolves around the cell cycle.\\
 The cell cycle mainly controls cellular growth, development, and differentiation and is hereby a very common target in anticancer drug discovery \cite{bai_cell_2017}. Similarly, manipulation of protein-protein interaction is a promising avenue in pharmacology and can be induced by modulation of transcription activity \cite{fontaine_pharmacological_2015}.
 
 \begin{table}[h!]
@@ -322,14 +327,28 @@ Cell Cycle, Mitotic & $5.55e-8$ \\
 
 
 \subsection{Gene-Cells}
-In order to investigate the relationship between gene expression and cell viability as a consequence of drug perturbation we computed for each sample the mean of the gene expression vector \(\mathbf{e}\) and cell viability vector \(\mathbf{v}\) respectively. We then examine pairs of scatter plots with signatures from cytotoxic perturbations (i.e. low cell viability mean) and non-cytotoxic perturbations (i.e high cell viability mean) respectively. We made consistent observations as exemplified in Figure \ref{low_mean} and \ref{high_mean}: An increase in cytotoxicity of a compound  seems to be associated with an increase in the variability of expression levels across genes.
-
+In order to investigate the relationship between gene expression and cell viability as a consequence of drug perturbation we computed for each sample the mean of the gene expression vector \(\mathbf{e}\) and cell viability vector \(\mathbf{v}\) respectively. We then examine pairs of scatter plots with signatures from cytotoxic perturbations (i.e., low cell viability mean) and non-cytotoxic perturbations (i.e high cell viability mean) respectively. We made consistent observations, as exemplified in Figure \ref{low_mean} and \ref{high_mean}: An increase in cytotoxicity of a compound  seems to be associated with an increase in the variability of expression levels across genes.
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{1\textwidth}
+ \centering
+\caption{low cell viability mean}
+\includegraphics[height=5cm]{images/low_cell_mean.png}\label{low_mean}
+\end{subfigure}
+\begin{subfigure}{1\textwidth}
+\centering
+\caption{high cell viability mean.}
+\includegraphics[height=5cm]{images/high_cell_mean.png}\label{high_mean}
+\end{subfigure}
+\caption{\textbf{Scatter plot of samples.} The x-axis shows the individual features of the sample and the y-axis the associated feature values.}
+\end{figure}
+\clearpage
 In order to statistically solidify this observation, we  measured the Pearson correlation between the cell viability mean and the standard deviation of the gene expression means and could identify a statistically relevant correlation of -0.8836 (\(p\leq1e-6\)). This suggest that cell death is strongly associated with changes in gene expression.
 We further found that the cell viability does not correlate with the gene expression mean (\(p\leq1e-6\)) but, instead, correlates highly with the absolute gene expression mean (\(p\leq1e-6\)) indicating that perturbation induced cell death is not associated with up- or down- regulation of genes specifically but with regulation in general. 
 
 \begin{figure}[h!]
 \centering
-\caption{Heatmap of Pearson Correlations}
+\caption{Heatmap of Pearson Correlations of feature statistics.}
 \includegraphics[height=7cm]{images/gene_cell_corr.png}\label{corr_map}
 \end{figure}
 \begin{table}[h!]
@@ -347,39 +366,55 @@ gene std  &  -0.883603 &  0.755585 &   0.010411 &  1.000000 \\
 \caption{Correlations between gene and cell statistics}\label{cell_gene_corr_table}
 \end{table}
 
-\begin{figure}[h!]
-\centering
-\caption{Scatter plot of sample with low cell viability mean}
-\includegraphics[height=5cm]{images/low_cell_mean.png}\label{low_mean}
-\end{figure}
-\begin{figure}[h!]
-\centering
-\caption{\textbf{Scatter plot of sample with high cell viability mean.} The x-axis shows the individual features of the sample and the y-axis the associated feature values.}
-\includegraphics[height=5cm]{images/high_cell_mean.png}\label{high_mean}
-\end{figure}
 \subsection{Discussion}
-The directionality of the causal relationship between regulation and cell death cannot be established from the correlations alone, but studies suggest that transcription factors may be involved in regulating cell death and profileration and that, hence, the expression signatures may be predictive of the cell viability signatures. Szalai \textit{et al.} studied similar petrurbation-based gene expression and cell viability signatures and identified pathway and transcription factor activities associated with the gene–cell viability correlations using different statistical tools. Some of the most activated (e.g. TP53, FOXO3) and inactivated (e.g. E2F1, FOXM1 and MYC) transcription factors were found to exhibit causal roles as regulators in cell death and proliferation \cite{szalai_signatures_2019}.
+The directionality of the causal relationship between regulation and cell death cannot be established from the correlations alone, but studies suggest that transcription factors may be involved in regulating cell death and profileration and that, hence, the expression signatures may be predictive of the cell viability signatures. Szalai \textit{et al.} studied similar petrurbation-based gene expression and cell viability signatures and statistically identified pathway and transcription factor activities associated with the gene–cell viability correlations. Some of the most activated (e.g. TP53, FOXO3) and inactivated (e.g. E2F1, FOXM1 and MYC) transcription factors were found to exhibit causal roles as regulators in cell death and proliferation \cite{szalai_signatures_2019}.
 
 These findings bear significance for the inference of mechanism of action from perturbation signatures because the expression of several genes acts as a confounding factor.
 
 
 \section{Dimensionality Reduction}
+Principal Component Analysis (PCA) is a dimensionality reduction technique that constructs a lower-dimensional linear subspace by using an orthogonal transformation to convert a set of random variables to a set of values of linearly independent variables, called principal components (PC). The variance that is retained under the projection is hereby maximal.\\
+\subsection{Results}
+We performed PCA on our dataset, extracted the first two principal components and plotted the projections as shows in Figure \ref{pca map}. We can observe that the first principal component clearly separates the samples that are inhibitors of the protein complex \textit{nuclear factor kappa-light-chain-enhancer of activated B cells} (NF-kB) and hereby captures 41.8\% (Figure \ref{cum_cvar}) of the variance. The second principal component captures the separation \textit{cyclin-dependent kinase inhibitors} which are used to treat cancers by preventing overproliferation of cancer cells, hereby explaining 3.88\% of the variance.\\
+We further note in plot \ref{cum_cvar} that even the first 100 principal components only manage to capture under 80\% of the cumulative variance in the data.
 \begin{figure}[h!]
 \centering
-\caption{PCA}
-\includegraphics[height=9cm]{images/pca_labelled.png}\label{pca map}
+\begin{subfigure}{.9\textwidth}
+ 
+  \centering
+  \includegraphics[width=1\linewidth]{images/pca.png}
+  \caption{\textbf{Data projection onto the first two principal components}. PC 1 appears to capture the variance explaining the separation of nfkb inhibitors.}
+  \label{pca map}
+\end{subfigure}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{images/cum_variance.png}
+  \caption{Cumulative variance explained by the first 100 principal components.}
+  \label{cum_cvar}
+  \end{subfigure}
+  \caption{Principal Component Analysis}
 \end{figure}
 
+% \begin{figure}[h!]
+% \centering
+% \caption{Scatter plot of the data projection onto the first two principal components}
+% \includegraphics[height=9cm]{images/pca.png}\label{pca map}
+% \end{figure}
+\subsection{Discussion}
+Our analysis demonstrates the existence of a lower biologically relevant linear space achieving some form of separation with respect to the
+MoAs. This, however, is not enough to conclude on the actual intrinsic dimensionality of the gene expression and cell viability space. Different cell or tissue types tend to cluster separately and can in principle be connected via a single nonlinear line, hereby complicating the notion of intrinsic dimensionality \cite{lenz_principal_2016}. Additionally, the dimensionality estimation is affected by the selection bias introduced with the dataset as it does not cover the full range of all possible gene expression patterns \cite{lenz_principal_2016}.\\
+Biologically, however, we know that genes affect the expression of each other through gene regulatory networks. The number possible network states is hereby limited and therefore significantly lower than the number of genes, implying that the intrinsic dimensionality of the  gene expression space is substantially lower than the number of genes \cite{lenz_principal_2016}.\\ 
+When it comes to the MoA inference task that we tackle in the next section, the low cumulative variance captured by the first 100 principal components may suggest that non-linear methods  could achieve better separation of the MoAs.
 
 \chapter{Model Training}\label{model_training}
-In this section, we are concerned with learning the functional mapping \[f: \mathbb{R}^{L} \rightarrow \mathbb{R}^{K} \text { that fits }\left\{\mathbf{x}_{i}, \mathbf{y}_{i}\right\}_{i=1}^{N},\] hereby constructing a model that predicts a set of mechanism of actions encoded as a binary vector for a given drug perturbation. 
+In this section, we are concerned with learning the functional mapping \(f\) defined in (\ref{funcmap}) and hereby constructing a model that predicts a set of mechanism of actions encoded as a binary vector for a given drug perturbation. 
 This task can essentially be described as a \textit{multi-label classification} problem which is a generalization of \textit{multinomial classification} and requires more thought and adaptions in the sampling, learning and evaluation methods than the latter counterpart.\\
 \section{Data Partitioning}
 In order to obtain an generalizable estimate of the performance of our model, we cannot compute evaluation metrics on the same dataset as was used for training or optimization as this would result in a biased score that is unlikely to generalize to future, unseen data. In the context of drug action prediction, such a biased score would not give us an accurate assessment of the robustness of our model and the ability to predict the MoA for new unknown compounds. 
-We therefore partition our dataset \(\mathscr{D}\) into three disjoint subsets: A training set (70\% of the samples) for fitting the parameters of the model, a validation set (15\% of the samples) for optimizing the hyperparameters which are parameters controlling the learning process and finally a test set (15\% of the samples) on which we evaluate the optimized models in order to provide an approximation of the generalization error.
-There exists other data partitioning methods such as \textit{cross-validation} in which a dataset is repeatedly split into a training dataset and a validation dataset that have shown to yield higher average predictive performance that simple splitting \cite{schaffer_selecting_1993}. However, it is still debated whether this method also results in less bias. \\
-In our study, the fairly high number of samples reduced the need for cross-validation and our computational restrictions made the expensive cross-validation method rather infeasible. \\
-Another requirement for the estimate of generalisation error is that the subsets follow a similar distribution. As shown in Figure \ref{label_dist}, the distribution of labels in our dataset is very imbalanced. This is commonly mitigated using stratified sampling in the partition of the datasets. While the implementation of this method for the multinomial classification problem is clear (e.g. groups are differentiated based on the value of the target variable), it is not evident how this would work for our multi-label case. We implement the novel \textit{iterative stratification} algorithm proposed by Sechidis \textit{et al.}. In each iteration it greedily examines the label with the fewest remaining examples in order to avoid that samples may be distributed in an undesired way if rare labels are not examined in priority. For each example of this label, it then selects an appropriate subset for distribution according to empirically validated heuristics \cite{sechidis_stratication_nodate}.
+We therefore partition our dataset \(\mathscr{D}\) into three disjoint subsets: A training set (70\% of the samples) for fitting the parameters of the model, a validation set (15\% of the samples) for optimizing the hyperparameters which are parameters controlling the learning process and finally a test set (15\% of the samples) on which we evaluate the optimized models in order to provide an approximation of the generalization error.\\
+% There exists other data partitioning methods such as \textit{cross-validation} in which a dataset is repeatedly split into a training dataset and a validation dataset that have shown to yield higher average predictive performance that simple splitting \cite{schaffer_selecting_1993}. However, it is still debated whether this method also results in less bias. \\
+% In our study, the fairly high number of samples reduced the need for cross-validation and our computational restrictions made the expensive cross-validation method rather infeasible. \\
+Another requirement for the estimate of generalisation error is that the subsets follow a similar distribution. As shown in Figure \ref{label_dist}, the distribution of labels in our dataset is very imbalanced. This is commonly mitigated using stratified sampling in the partition of the datasets. While the implementation of this method for the multinomial classification problem is clear (e.g. groups are differentiated based on the value of the target variable), it is not evident how this would work for our multi-label case. We employ the novel \textit{iterative stratification} algorithm proposed by Sechidis \textit{et al.}. In each iteration, it greedily examines the label with the fewest remaining examples in order to avoid that samples may be distributed in an undesired way if rare labels are not examined in priority. For each example of this label, it then selects an appropriate subset for distribution according to empirically validated heuristics \cite{sechidis_stratication_nodate}.
 \begin{figure}[h!]
 \centering
 \caption{Distribution of labels}
@@ -390,14 +425,14 @@ Evaluation measures are critical to the assessment of the performance of a model
 
 The two desirable outcomes of the classification problem are 
 \begin{itemize}
-    \item True Positive: Correctly predicting that a drug has a certain effect.
-    \item True Negative: Correctly predicting that a drug does not have a certain effect.
+    \item \textit{True Positive}: Correctly predicting that a drug has a certain effect.
+    \item \textit{True Negative}: Correctly predicting that a drug does not have a certain effect.
 \end{itemize}
 
 The two two types of errors to avoid are:
 \begin{itemize}
-    \item False Positive: Wrongly assigning a specific effect to a drug.
-    \item False Negative: Failing to predict an effect of a drug.
+    \item \textit{False Positive}: Wrongly assigning a specific effect to a drug.
+    \item \textit{False Negative}: Failing to predict an effect of a drug.
 \end{itemize}
 
 Most metrics used for evaluation of classifiers are a function of these outcomes. In the context of multi-label classification, we additionally need to average the metrics across labels.
@@ -409,10 +444,11 @@ where TP = True Positives, TN = True Negatives, FP = False Positives, and FN = F
 
 Accuracy, however, is not well suited to class-imbalanced problems like ours. A classifier can reach high accuracy scores on imbalanced data by merely predicting the majority class. Accuracy does not distinguish between the numbers of correctly classified examples of different classes \cite{galar_review_2012}.
 
-A better indication of model performance is given by the Precision-Recall Curve which demonstrates the tradeoff between precision and recall for different thresholds. A high area under the curve (AUC) is desirable as it signifies both high recall and high precision.
-
+A better indication of model performance is given by the Precision-Recall Curve which demonstrates the tradeoff between precision and recall given by
 \[\text { Precision }=\frac{TP}{TP+ FP}\]
 \[\text { Recall }=\frac{TP}{TP+ FN}\]
+for different thresholds. A high area under the curve (AUC) is desirable as it signifies both high recall and high precision.
+
 
 
 
@@ -453,8 +489,8 @@ where
 and \(\left(\mathbf{K}_{n}\right)_{i j}=k\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)\). \(k\) is our chosen kernel function, representing the covariance of a pair of observations. \(k\) is commonly chosen to be an exponentiated quadratic kernel with overall variance \(\sigma^{2}\) and lengthscale \(\ell\) :
 \[k\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)=\sigma^{2} \exp \left(-\frac{\left\|\mathbf{x}_{i}-\mathbf{x}_{j}\right\|^{2}}{2 \ell^{2}}\right)\]
 
-For the purpose of practical hyperparameter optimization, the Matern 5/2 kernel is commonly used as it  allows for less smooth surfaces \textit{Snoek et al.} \cite{snoek_practical_nodate}.
-\[k\left(\mathbf{x}, \mathbf{x}^{\prime}\right)=\theta_{0}\left(1+\sqrt{5 r^{2}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)}+\frac{5}{3} r^{2}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)\right) \exp \left(-\sqrt{5 r^{2}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)}\right)\]
+For the purpose of practical hyperparameter optimization, the Matern 5/2 kernel is commonly used as it  allows for less smooth surfaces \cite{snoek_practical_nodate}.
+\[k\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)=\theta_{0}\left(1+\sqrt{5 r^{2}\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)}+\frac{5}{3} r^{2}\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)\right) \exp \left(-\sqrt{5 r^{2}\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)}\right)\]
 
 The Gaussian prior and the observations induce a posterior over functions which help us decide where to next evaluate \(f\) using the inexpensive acquisition function \(a\). The next point \(\mathbf{x}_{n+1}\) is determined via the proxy optimization  \(\mathbf{x}_{n+1}=\operatorname{argmax}_{\mathbf{x}} a(\mathbf{x})\).
 A common choice of acquisition function is the \textit{Expected Improvement}
@@ -462,7 +498,7 @@ A common choice of acquisition function is the \textit{Expected Improvement}
 a_{\mathrm{EI}}(x)=\mathbb{E}[f(\mathbf{x})-f_{n}^{*} \mid\left(\mathbf{x}_{1}, y_{1}, \ldots, \mathbf{x}_{n}, y_{n}\right)],
 \] where \(f_{n}^{*}\) is the maximal value of \(f\) observed so far.
 \section{Experimental Setup}
-One of the most crucial aspects of experimental setup of Bayesian Optimisation is the search space. It involves the choice of the hyperparameters to optimize and their domain and is subject to the trade-off between computational resources and time. Additionally, BO currently has scalability issues and is practically limited to a search space involving 10 - 20 parameters \cite{moriconi_high-dimensional_2020}.
+One of the most crucial aspects of the experimental setup of Bayesian Optimisation is the search space. It involves the choice of the hyperparameters to optimize and their domain and is subject to the trade-off between computational resources and time. Additionally, BO currently has scalability issues and is practically limited to a search space involving 10 - 20 parameters \cite{moriconi_high-dimensional_2020}.
 
 We take a heuristic approach to the optimization of the neural network architecture by defining three parameters that describe the entire architecture rather than exploding the dimensionality of the search space with parameters describing the activation functions and number of nodes for each layer of the network:
 \begin{itemize}
@@ -473,10 +509,10 @@ We take a heuristic approach to the optimization of the neural network architect
 This relaxed neural architecture optimization follows from the assumption that the number of nodes need to decrease in order to learn biologically meaningful and discriminative generalisations of the correlated biological data. \\
 Aside from architecture parameters, we optimize the 
 \begin{itemize}
-    \item batch size
-    \item epochs
-    \item learning rate of the learning procedure
-    \item the dropout rate
+    \item batch size indicating how many samples are used for each parameter update.
+    \item epochs (i.e. the number of full training cycles on the data set).
+    \item learning rate of the gradient optimization.
+    \item the dropout rate for regularization.
     \item boolean parameter indicating whether \textit{batch normalization} should be applied to the layers. Batch normalization standardizes the activations of each input variable per mini-batch with the aim of stabilizing and speeding-up the learning training procedure.\\
 \end{itemize}
 
@@ -534,11 +570,11 @@ Figure \ref{bo_obj} shows the partial dependence plot of the objective function 
 \includegraphics[height=16cm]{images/bo_objective.png}\label{bo_obj}
 \end{figure}
 \section{Discussion}
-The dependence plots indicate that a smaller number of hidden layers with a high node decreasing factor are favoured, while the node decreasing factor becomes increasingly important with the number of hidden layers.
+The dependence plots indicate that a smaller number of hidden layers with a high node decreasing factor are favoured, while the node decreasing factor becomes increasingly important with the number of hidden layers.\\
+We performed relaxed neural architecture search using a constant node decreasing factor, hereby assuming the optimal number of nodes to be exponentially decaying in the number of layers. In further experiments, we could extend the node decreasing factor to be a different function of the number of layers.\\
+In addition to these observations, we note that a smaller number of hidden layers is favoured, irrespective of the activation function, epochs or dropout rate but respective of the learning rate. Only smaller learning rates (\(10^{-2}\)) seem to differentiate the performances for hidden layer sizes. This could be due to the fact that larger hidden layer sizes induce a more complex error surface that is more difficult to navigate in a meaningful way in the gradient optimization when faced with a too large learning rate. \\
 
-
-We perform relaxed neural architecture search using a constant node decreasing factor, hereby assuming the optimal number of nodes to be exponentially decaying in the number of layers. In further experiments, we could extend the node decreasing factor to be a different function of the number of layers.
-It should be noted the surrogate model and dependence plots can be inaccurate because they are built from only 74 samples of calls to the fitness function. The results should be validated on a larger set of trials.
+Finally, it should be noted the surrogate model and dependence plots can be inaccurate because they are built from only 74 samples of calls to the fitness function. The results should be validated on a larger set of trials.
 
 
 \chapter{Model Interpretation}
@@ -557,8 +593,8 @@ Integrated Gradients, a method proposed by \textit{Sundararajan et al.}, address
 
 We define this formally for our problem of identifying the integrated gradients of the gene and cell values for a given MoA classification.
 
-For our learned function, \[f: \mathbb{R}^{L} \rightarrow \mathbb{R}^{K},\] we define \[f_{k}: \mathbb{R}^{L} \rightarrow \mathbb{R}\] as a mapping to the probability of the indexed label \(k\), which could be one of the ground-truth MoA labels. The attributions \(A_{i}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)\) towards the label \(k\) for each feature \(x_{i}\) with respect to the corresponding feature \(x_{i}^{\prime}\) in the baseline are calculated as
-\[ A_{i}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)=\left(x_{i}-x_{i}^{\prime}\right) \int_{0}^{1} \frac{\partial f_{k}\left(\mathbf{x}^{\prime}+\alpha\left(\mathbf{x}-\mathbf{x}^{\prime}\right)\right)}{\partial x_{i}} d \alpha \]
+For our learned function, \[f: \mathbb{R}^{L} \rightarrow \mathbb{R}^{K},\] we define \[f_{k}: \mathbb{R}^{L} \rightarrow \mathbb{R}\] as a mapping to the probability of the indexed label \(k\), which could be one of the ground-truth MoA labels. The attributions \(A_{k}^{(i)}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)\) towards the label \(k\) for each feature \(x_{i}\) with respect to the corresponding feature \(x_{i}^{\prime}\) in the baseline are calculated as
+\[ A_{k}^{(i)}\left(\mathbf{x}, \mathbf{x}^{\prime}\right)=\left(x_{i}-x_{i}^{\prime}\right) \int_{0}^{1} \frac{\partial f_{k}\left(\mathbf{x}^{\prime}+\alpha\left(\mathbf{x}-\mathbf{x}^{\prime}\right)\right)}{\partial x_{i}} d \alpha \]
 
 \section{Results}
 For our experimental setup, we select samples for different labels uniformly at random and compute the attributions for each gene and cell feature with respect to the mean control perturbation as baseline.
@@ -574,7 +610,7 @@ In order to quantify our results, we define an enrichment of the attributions of
 
 We conduct the above described method on a set of 20 samples with distinct MoA. The MoAs with highest label count were selected in order to mitigate overfitting caused by MoA with very few samples in the training set. We report a confirmation of enrichment for 9 out of 20 samples. 
 
-\section{Discussion}
+
 We demonstrate our method on an example perturbation sample by \textit{Bortezomib} and its associated target \textit{Proteasome Inhibitor.} Proteasomes are protein complexes which degrade unneeded or damaged proteins by proteolysis. The proteasome pathways are critical for the proliferation and survival of all cells and appear to be associated with the pathophysiology of some cancers. It was therefore suggested that pharmacological inhibition of proteasome function may prove useful as a novel class of anticancer drugs \cite{chen_bortezomib_2011}. The proteasome inhibitor Bortezomib has shown to induce apoptosis of a variety of cancer cells, including leukemia, lymphoma, multiple myeloma and breast cancers \cite{cao_ubiquitin-proteasomal_2011}.
 Table \ref{bortezomib} shows the 5 most significant pathways for the gene attributions. We compared the identified pathways with the literature on the pharmacodynamics of Bortezomib and could find at least two pathway associations in the literature. 
 The over-represented Telomere pathways in Table \ref{bortezomib} align with findings by \textit{Weiss et al.} that Bortezomib downregulates telomerase activity in multiple myeloma cells \cite{weiss_differential_2012}.
@@ -583,7 +619,7 @@ We further find confirmation in the literature for the importance of \textit{His
 \centering
 \begin{tabular}{p{8cm}p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}}
 \toprule
-Pathway name &	\#Entities found &	\#Entities total &	Entities ratio &	Entities pValue\\
+Pathway name &	\#Entities found &	\#Entities total &	Entities ratio &	Entities p-Value\\
 \midrule
 Telomere Maintenance&	3&	111&	0.0075	&0.0009 \\
 Chromosome Maintenance&	3&	138 &	0.0094&	0.0018 \\
@@ -593,10 +629,10 @@ HDACs deacetylate histones&	2&	67&	0.0045&	0.0062\\
 Extension of Telomeres&	2&	69&	0.0046&	0.0066 \\
 \bottomrule
 \end{tabular}
-\caption{Enriched pathways for Bortezomib}\label{bortezomib}
+\caption{\textbf{Enriched pathways for Bortezomib.}  The columns indicate how many entities (e.g. genes, proteins) are part of the pathway in total and how many where matched. The p-value provides an indication on the probability that the entities matched by chance only.}\label{bortezomib}
 \end{table}
-
-To conclude, we should note that the results reported in the previous section should be validated by further experiments. We conducted our method on a set of only 20 samples as our work is severely time-limited and the method requires significant manual evaluation for the literature research.
+\section{Discussion}
+The feature attribution method yields relevant biological  interpretations and contributes towards the goal of interpretability in pharmacological prediction models. However, we should note that the results reported above should be validated by further experiments. We conducted our method on a set of only 20 samples as our work is severely time-limited and the method requires significant manual evaluation for the literature research.
 Furthermore, it should be noted that the 45\% confirmation ratio for our samples does not suggest that the model or the integrated gradients method is unreliable  as our model looks for correlations between the output and the input and not for causal relationships. Enriched pathways that are not confirmed by the literature could either be indirectly correlated with the MoA or exhibit an unknown causal relationship.  Many drugs are still objects of active research and it is very possible that relationships proposed by our model will be confirmed by research community in the future. \\
 Additionally, we should also consider that biological databases such as Reactome are by no means perfect representations of biological knowledge. A lot of information will be missing and hence not appear in our enrichment analysis. \\
 Lastly, both positive and negative results are implicated by overfitting and training bias as demonstrated in \ref{model_training}. Especially mechanisms of actions with a lower number of samples in the training set could produce pathway enrichments that are related to noise in the sample and not a significant biological function. \\
@@ -613,12 +649,15 @@ We therefore conclude that the proposed model interpretation method should not b
 % This question is of interest because it  I.e. we want to identify the biological processes
 
 
-\chapter{Conclusions and Future Work}
+\chapter{Conclusion}
+This thesis presented deep learning strategies to identify novel drug targets. The study leveraged the recent availability of transcriptomic drug perturbation data to develop methods of inferring the mechanism of action of compounds, as to identify novel targets for both existing drugs and unknown compounds.\\
+In chapter 4, it was shown in the correlation and principal component analysis that linear representations yield biologically relevant interpretations with respect to the activity and function of drug compounds.\\  However, we showed in chapter 5 and 6 that non-linear methods, especially deep neural networks, achieve considerable performance in the MoA prediction task. We further demonstrated how Bayesian optimization can be used in NNs to optimize learning parameters and the architecture. \\
+The \textit{Integrated Gradients} method presented in chapter 7 proved to be a promising tool to generate biological hypotheses about drugs and their effects to be investigated by biologists.\\
+From a practical perspective, the experiments and results in this project provided a good starting point in leveraging transcriptomic data to identify novel drug targets. However, this problem would benefit from a holistic approach that incorporates inductive biases acquired in biomedical and pharmaceutical research, as well as further data on the chemistry of compounds and physiology of diseases. 
+% Include domain specific data
 
-Include domain specific data
-
-Limitations
-CMap comes with some limitations, such as limited drug perturbation data, a limited drug coverage, dosage-dependent conditions and the uncertainty of applying cell lines or animal model expression patterns to human systems. Also, the methodology can be expensive and time-consuming before it can generate a significant portion of all safe dosage conditions for a limited number of cell lines for CMap
+% Limitations
+% CMap comes with some limitations, such as limited drug perturbation data, a limited drug coverage, dosage-dependent conditions and the uncertainty of applying cell lines or animal model expression patterns to human systems. Also, the methodology can be expensive and time-consuming before it can generate a significant portion of all safe dosage conditions for a limited number of cell lines for CMap
 
 % use the following and \cite{} as above if you use BibTeX
 % otherwise generate bibtem entries
